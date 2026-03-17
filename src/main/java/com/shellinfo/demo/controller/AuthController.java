@@ -22,4 +22,5 @@ public class AuthController {
 
         return "OTP sent successfully";
     }
+
 }

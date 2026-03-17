@@ -1,6 +1,8 @@
 package com.shellinfo.demo.service;
 
 import com.shellinfo.demo.exception.MobileAlreadyExistsException;
+import com.shellinfo.demo.model.GoogleUser;
+import com.shellinfo.demo.model.GoogleUserInfo;
 import com.shellinfo.demo.model.User;
 import com.shellinfo.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
