@@ -6,9 +6,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.shellinfo.demo.model.GoogleUser;
 import com.shellinfo.demo.model.GoogleUserInfo;
-import com.shellinfo.demo.model.User;
 import com.shellinfo.demo.repository.GoogleUserRepository;
-import com.shellinfo.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +15,8 @@ import java.util.Collections;
 @Service
 public class GoogleService {
 
-    private static final String CLIENT_ID = "74096825815-24m74l4d42ofbfj4d263nnl778e4n7lp.apps.googleusercontent.com";
+    private static final String WEB_CLIENT_ID =
+            "74096825815-24m74l4d42ofbfj4d263nnl778e4n7lp.apps.googleusercontent.com";
 
     public GoogleUserInfo verifyToken(String idTokenString) {
 
@@ -27,28 +26,35 @@ public class GoogleService {
                             new NetHttpTransport(),
                             JacksonFactory.getDefaultInstance()
                     )
-                            .setAudience(Collections.singletonList(CLIENT_ID))
+                            .setAudience(Collections.singletonList(WEB_CLIENT_ID))
                             .build();
+
+            System.out.println("Incoming Token: " + idTokenString);
+            System.out.println("Expected WEB_CLIENT_ID: " + WEB_CLIENT_ID);
 
             GoogleIdToken idToken = verifier.verify(idTokenString);
 
-            if (idToken != null) {
-
-                GoogleIdToken.Payload payload = idToken.getPayload();
-
-                return new GoogleUserInfo(
-                        payload.getSubject(),
-                        payload.getEmail(),
-                        (String) payload.get("name"),
-                        (String) payload.get("picture")
-                );
+            if (idToken == null) {
+                throw new RuntimeException("Token verification failed");
             }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+
+            String audience = payload.getAudience().toString();
+            System.out.println("Token AUD: " + audience);
+
+            return new GoogleUserInfo(
+                    payload.getSubject(),
+                    payload.getEmail(),
+                    (String) payload.get("name"),
+                    (String) payload.get("picture")
+            );
+
 
         } catch (Exception e) {
             throw new RuntimeException("Invalid Google token");
         }
 
-        throw new RuntimeException("Google login failed");
     }
 
     @Autowired

@@ -9,7 +9,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "abc123def456";
+    private final String SECRET = "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";
 
     public String generateToken(String email) {
 
