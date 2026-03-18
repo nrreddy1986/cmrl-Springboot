@@ -1,5 +1,6 @@
 package com.shellinfo.demo.controller;
 
+import com.shellinfo.demo.model.ApiResponse;
 import com.shellinfo.demo.model.GoogleUser;
 import com.shellinfo.demo.model.GoogleUserInfo;
 import com.shellinfo.demo.model.dto.GoogleAuthResponse;
@@ -22,7 +23,7 @@ public class GoogleAuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/google")
-    public ResponseEntity<GoogleAuthResponse> googleLogin(
+    public ResponseEntity<ApiResponse<GoogleAuthResponse>> googleLogin(
             @RequestBody GoogleLoginRequest request) {
 
         // 1. Verify Google token
@@ -34,6 +35,9 @@ public class GoogleAuthController {
         // 3. Generate JWT
         String token = jwtUtil.generateToken(user.getEmail());
 
-        return ResponseEntity.ok(new GoogleAuthResponse(token, user));
+//        return ResponseEntity.ok(new GoogleAuthResponse(token, user));
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Google login success", new GoogleAuthResponse(token, user)));
     }
 }
