@@ -52,7 +52,6 @@ public class UserService {
         } else {
             throw new RuntimeException("Invalid OTP");
         }
-
     }
 
     public String sendOtp(String mobileNumber) {
