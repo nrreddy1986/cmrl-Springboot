@@ -4,7 +4,6 @@ import com.shellinfo.demo.model.ApiResponse;
 import com.shellinfo.demo.model.CommonUser;
 import com.shellinfo.demo.model.dto.*;
 import com.shellinfo.demo.service.CommonAuthService;
-import com.shellinfo.demo.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.Map;
 public class CommonAuthController {
 
     private final CommonAuthService authService;
-    private final JwtUtil jwtUtil;
 
     // 📱 Send OTP
     @PostMapping("/send-otp")
@@ -84,7 +82,7 @@ public class CommonAuthController {
 
         CommonUser commonUser = authService.updateProfile(request, req);
         CommonUserDetailsDto commonUserDetailsDto = CommonUserDetailsDto.from(commonUser);
-        return ResponseEntity.ok(ApiResponse.success("User Profile Details", commonUserDetailsDto));
+        return ResponseEntity.ok(ApiResponse.success("Updated User Profile Details", commonUserDetailsDto));
 
     }
 
