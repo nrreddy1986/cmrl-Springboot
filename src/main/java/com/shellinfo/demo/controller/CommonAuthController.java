@@ -2,10 +2,7 @@ package com.shellinfo.demo.controller;
 
 import com.shellinfo.demo.model.ApiResponse;
 import com.shellinfo.demo.model.CommonUser;
-import com.shellinfo.demo.model.dto.CommonOtpRequest;
-import com.shellinfo.demo.model.dto.GetOtpRequest;
-import com.shellinfo.demo.model.dto.GoogleLoginRequest;
-import com.shellinfo.demo.model.dto.UpdateProfileRequest;
+import com.shellinfo.demo.model.dto.*;
 import com.shellinfo.demo.service.CommonAuthService;
 import com.shellinfo.demo.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,31 +67,33 @@ public class CommonAuthController {
 
     // 🔗 Link Mobile
     @PostMapping("/link-mobile")
-    public ResponseEntity<String> linkMobile(
+    public ResponseEntity<ApiResponse<CommonUserDetailsDto>> linkMobile(
             HttpServletRequest request,
             @RequestParam String mobile) {
 
-        authService.linkMobile(request, mobile);
-        return ResponseEntity.ok("Mobile linked successfully");
+        CommonUser commonUser = authService.linkMobile(request, mobile);
+        CommonUserDetailsDto commonUserDetailsDto = CommonUserDetailsDto.from(commonUser);
+        return ResponseEntity.ok(ApiResponse.success("Mobile linked successfully", commonUserDetailsDto));
     }
 
     // 👤 Update Profile
     @PutMapping("/profile")
-    public ResponseEntity<CommonUser> updateProfile(
+    public ResponseEntity<ApiResponse<CommonUserDetailsDto>> updateProfile(
             HttpServletRequest request,
             @RequestBody UpdateProfileRequest req) {
 
-        return ResponseEntity.ok(
-                authService.updateProfile(request, req)
-        );
+        CommonUser commonUser = authService.updateProfile(request, req);
+        CommonUserDetailsDto commonUserDetailsDto = CommonUserDetailsDto.from(commonUser);
+        return ResponseEntity.ok(ApiResponse.success("User Profile Details", commonUserDetailsDto));
+
     }
 
     // 👤 Get Profile
     @GetMapping("/profile")
-    public ResponseEntity<CommonUser> getProfile(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<CommonUserDetailsDto>> getProfile(HttpServletRequest request) {
 
-        return ResponseEntity.ok(
-                authService.getProfile(request)
-        );
+        CommonUser commonUser = authService.getProfile(request);
+        CommonUserDetailsDto commonUserDetailsDto = CommonUserDetailsDto.from(commonUser);
+        return ResponseEntity.ok(ApiResponse.success("User Profile Details", commonUserDetailsDto));
     }
 }

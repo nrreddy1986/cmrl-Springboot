@@ -80,11 +80,11 @@ public class CommonAuthService {
     }
 
     // 🔹 Link Mobile after Google login
-    public void linkMobile(HttpServletRequest request, String mobile) {
+    public CommonUser linkMobile(HttpServletRequest request, String mobile) {
 
         CommonUser commonUser = getCurrentUser(request);
         commonUser.setMobileNumber(mobile);
-        CommonUserRepository.save(commonUser);
+        return CommonUserRepository.save(commonUser);
     }
 
     // 🔹 Update Profile
