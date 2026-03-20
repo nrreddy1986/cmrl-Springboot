@@ -1,10 +1,10 @@
 package com.shellinfo.demo.controller;
 
+import com.shellinfo.demo.model.ApiResponse;
+import com.shellinfo.demo.model.User;
 import com.shellinfo.demo.model.dto.GetOtpRequest;
 import com.shellinfo.demo.model.dto.UserDetailsDto;
 import com.shellinfo.demo.model.dto.VerifyOtpRequest;
-import com.shellinfo.demo.model.ApiResponse;
-import com.shellinfo.demo.model.User;
 import com.shellinfo.demo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
