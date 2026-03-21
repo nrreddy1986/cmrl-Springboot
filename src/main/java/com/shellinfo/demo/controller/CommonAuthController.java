@@ -67,15 +67,15 @@ public class CommonAuthController {
     @PostMapping("/link-mobile")
     public ResponseEntity<ApiResponse<CommonUserDetailsDto>> linkMobile(
             HttpServletRequest request,
-            @RequestParam String mobile) {
+            @RequestBody GetOtpRequest getOtpRequest) {
 
-        CommonUser commonUser = authService.linkMobile(request, mobile);
+        CommonUser commonUser = authService.linkMobile(request, getOtpRequest.getMobileNumber());
         CommonUserDetailsDto commonUserDetailsDto = CommonUserDetailsDto.from(commonUser);
         return ResponseEntity.ok(ApiResponse.success("Mobile linked successfully", commonUserDetailsDto));
     }
 
     // 👤 Update Profile
-    @PutMapping("/profile")
+    @PostMapping("/profile")
     public ResponseEntity<ApiResponse<CommonUserDetailsDto>> updateProfile(
             HttpServletRequest request,
             @RequestBody UpdateProfileRequest req) {

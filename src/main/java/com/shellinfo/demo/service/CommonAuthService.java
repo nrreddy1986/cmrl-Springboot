@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -80,11 +81,28 @@ public class CommonAuthService {
     }
 
     // 🔹 Link Mobile after Google login
-    public CommonUser linkMobile(HttpServletRequest request, String mobile) {
+    public CommonUser linkMobileOld(HttpServletRequest request, String mobile) {
 
         CommonUser commonUser = getCurrentUser(request);
         commonUser.setMobileNumber(mobile);
         return CommonUserRepository.save(commonUser);
+    }
+    public CommonUser linkMobile(HttpServletRequest request, String mobile) {
+
+        CommonUser currentUser = getCurrentUser(request);
+
+        // 🔥 Check if mobile already exists
+        Optional<CommonUser> existingUser =
+                CommonUserRepository.findByMobileNumber(mobile);
+
+        if (existingUser.isPresent() &&
+                !existingUser.get().getId().equals(currentUser.getId())) {
+
+            throw new RuntimeException("Mobile number already linked to another account");
+        }
+
+        currentUser.setMobileNumber(mobile);
+        return CommonUserRepository.save(currentUser);
     }
 
     // 🔹 Update Profile
