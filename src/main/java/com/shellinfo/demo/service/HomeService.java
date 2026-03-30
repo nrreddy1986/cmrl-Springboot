@@ -45,7 +45,8 @@ public class HomeService {
                                 p.getName(),
                                 p.getPrice(),
                                 p.getUnit(),
-                                p.getImage()
+                                p.getImage(),
+                                p.getDescription()
                         ))
                         .toList();
 
@@ -53,6 +54,7 @@ public class HomeService {
                         sub.getId(),
                         sub.getName(),
                         sub.getImage(),
+                        sub.getDescription(),
                         productDtos
                 );
 
@@ -62,6 +64,7 @@ public class HomeService {
                     main.getId(),
                     main.getName(),
                     main.getImage(),
+                    main.getDescription(),
                     subDtos
             );
 

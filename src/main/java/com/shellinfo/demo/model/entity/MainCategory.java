@@ -14,4 +14,10 @@ public class MainCategory {
 
     private String name;
     private String image;
+    private String description;
+
+    private String slug;          // "grocery-kitchen" (for SEO / APIs)
+    private Integer displayOrder; // UI sorting
+    private Boolean isActive;     // enable/disable category
+    private String icon;
 }

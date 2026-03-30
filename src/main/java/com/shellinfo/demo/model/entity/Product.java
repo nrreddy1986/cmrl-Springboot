@@ -16,6 +16,12 @@ public class Product {
     private double price;
     private String unit;
     private String image;
+    private String description;
+    private double originalPrice; // for discount
+    private int stock;
+    private boolean isAvailable;
+    private double rating;
+    private int reviewCount;
 
     @ManyToOne
     @JoinColumn(name = "sub_category_id")

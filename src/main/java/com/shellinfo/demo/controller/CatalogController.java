@@ -35,18 +35,36 @@ public class CatalogController {
     }
 
     /// 🔹 Add APIs
+    @PostMapping("/main-category")
+    public MainCategory addMainCategory(@RequestBody MainCategory category) {
+        return service.addMainCategory(category);
+    }
+
+    /// 🔹 Add APIs
     @PostMapping("/main-categories")
-    public MainCategory addMain(@RequestBody MainCategory c) {
-        return service.addMainCategory(c);
+    public List<MainCategory> addMainCategories(
+            @RequestBody List<MainCategory> categories) {
+
+        return service.addMainCategories(categories);
+    }
+
+    @PostMapping("/sub-category")
+    public SubCategory addSubCategory(@RequestBody SubCategory category) {
+        return service.addSubCategory(category);
     }
 
     @PostMapping("/sub-categories")
-    public SubCategory addSub(@RequestBody SubCategory c) {
-        return service.addSubCategory(c);
+    public List<SubCategory> addSubCategories(@RequestBody List<SubCategory> subCategories) {
+        return service.addSubCategories(subCategories);
+    }
+
+    @PostMapping("/product")
+    public Product addProduct(@RequestBody Product p) {
+        return service.addProduct(p);
     }
 
     @PostMapping("/products")
-    public Product addProduct(@RequestBody Product p) {
-        return service.addProduct(p);
+    public List<Product> addProducts(@RequestBody List<Product> products) {
+        return service.addProducts(products);
     }
 }

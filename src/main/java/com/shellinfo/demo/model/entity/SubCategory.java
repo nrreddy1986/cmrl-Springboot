@@ -14,8 +14,14 @@ public class SubCategory {
 
     private String name;
     private String image;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "main_category_id")
     private MainCategory mainCategory;
+
+    private String slug;
+    private Integer displayOrder;
+    private Boolean isActive;
+    private String bannerImage;
 }

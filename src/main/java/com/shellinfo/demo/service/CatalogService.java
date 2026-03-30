@@ -39,15 +39,27 @@ public class CatalogService {
     }
 
     /// 🔹 Add APIs
-    public MainCategory addMainCategory(MainCategory c) {
-        return mainRepo.save(c);
+    public MainCategory addMainCategory(MainCategory category) {
+        return mainRepo.save(category);
+    }
+
+    public List<MainCategory> addMainCategories(List<MainCategory> categories) {
+        return mainRepo.saveAll(categories);
     }
 
     public SubCategory addSubCategory(SubCategory c) {
         return subRepo.save(c);
     }
 
+    public List<SubCategory> addSubCategories(List<SubCategory> categories) {
+        return subRepo.saveAll(categories);
+    }
+
     public Product addProduct(Product p) {
         return productRepo.save(p);
+    }
+
+    public List<Product> addProducts(List<Product> products) {
+        return productRepo.saveAll(products);
     }
 }
