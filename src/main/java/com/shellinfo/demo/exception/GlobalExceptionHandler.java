@@ -1,6 +1,7 @@
 package com.shellinfo.demo.exception;
 
 import com.shellinfo.demo.model.ApiResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,12 +14,11 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handle Validation Errors
+    // ✅ Validation
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
 
         Map<String, String> errors = new HashMap<>();
-
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
         );
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure("Validation Failed", errors));
     }
 
-    // Handle Custom Exceptions
+    // ✅ Custom
     @ExceptionHandler(MobileAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Object>> handleMobileExists(MobileAlreadyExistsException ex) {
 
@@ -35,19 +35,40 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure("Registration Failed", ex.getMessage()));
     }
 
-    // Handle Runtime Exceptions (Login, Verify etc.)
+    // 🔥 JWT EXPIRED (VERY IMPORTANT)
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJwtExpired(ExpiredJwtException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+        errors.put("token", "JWT expired");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.failure("Token Expired", errors));
+    }
+
+    // 🔥 CUSTOM TOKEN EXCEPTION
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ApiResponse<Object>> handleToken(TokenExpiredException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+        errors.put("token", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.failure("Token Expired", errors));
+    }
+
+    // ✅ Runtime (General)
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Object>> handleRuntime(RuntimeException ex) {
 
         Map<String, String> errors = new HashMap<>();
-
-        errors.put("mobileNumber", ex.getMessage());
+        errors.put("error", ex.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(ApiResponse.failure("Login Failed", errors));
+                .body(ApiResponse.failure("Request Failed", errors));
     }
 
-    // Catch All (Very Important)
+    // ✅ Catch All
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
 
@@ -55,5 +76,3 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure("Internal Server Error", ex.getMessage()));
     }
 }
-
-

@@ -51,16 +51,24 @@ public class CommonAuthController {
         );
     }
 
+    @PostMapping("/verify-otp-new")
+    public ResponseEntity<ApiResponse<TokenResponse>> verifyOtpNew(@RequestBody CommonOtpRequest request) {
+        TokenResponse tokenResponse = authService.verifyOtpNew(
+                request.getMobileNumber(),
+                request.getOtp()
+        );
+        return ResponseEntity.ok(
+                ApiResponse.success("OTP verified successfully", tokenResponse)
+        );
+    }
+
     // 🔵 Google Login
     @PostMapping("/google")
-    public ResponseEntity<ApiResponse<Map<String, String>>> googleLogin(
+    public ResponseEntity<ApiResponse<TokenResponse>> googleLogin(
             @RequestBody GoogleLoginRequest request) {
-
-        String token = authService.googleLogin(request.getIdToken());
-        Map<String, String> data =
-                Collections.singletonMap("token", token);
+        TokenResponse tokenResponse = authService.googleLogin(request.getIdToken());
         return ResponseEntity.ok(
-                ApiResponse.success("Google login success", data));
+                ApiResponse.success("Google login success", tokenResponse));
     }
 
     // 🔗 Link Mobile
@@ -93,5 +101,16 @@ public class CommonAuthController {
         CommonUser commonUser = authService.getProfile(request);
         CommonUserDetailsDto commonUserDetailsDto = CommonUserDetailsDto.from(commonUser);
         return ResponseEntity.ok(ApiResponse.success("User Profile Details", commonUserDetailsDto));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<TokenResponse>> refresh(
+            @RequestBody RefreshTokenRequest request) {
+
+        TokenResponse tokenResponse = authService.refreshToken(request.getRefreshToken());
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Token refreshed successfully", tokenResponse)
+        );
     }
 }

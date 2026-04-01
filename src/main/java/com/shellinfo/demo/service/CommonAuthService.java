@@ -1,16 +1,19 @@
 package com.shellinfo.demo.service;
 
+import com.shellinfo.demo.exception.TokenExpiredException;
 import com.shellinfo.demo.model.CommonUser;
 import com.shellinfo.demo.model.GoogleUserInfo;
+import com.shellinfo.demo.model.dto.TokenResponse;
 import com.shellinfo.demo.model.dto.UpdateProfileRequest;
 import com.shellinfo.demo.repository.CommonUserRepository;
 import com.shellinfo.demo.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class CommonAuthService {
                     return u;
                 });
 
-        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+        String otp = generateOtp();
 
         CommonUser.setOtp(otp);
         CommonUserRepository.save(CommonUser);
@@ -55,8 +58,25 @@ public class CommonAuthService {
         return jwtUtil.generateToken(CommonUser.getPublicId());
     }
 
+    // 🔹 Verify OTP Login
+    public TokenResponse verifyOtpNew(String mobile, String otp) {
+
+        CommonUser CommonUser = CommonUserRepository.findByMobileNumber(mobile)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!otp.equals(CommonUser.getOtp())) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        CommonUser.setMobileVerified(true);
+        CommonUser.setOtp(null);
+        CommonUserRepository.save(CommonUser);
+
+        return jwtUtil.generateTokens(CommonUser.getPublicId());
+    }
+
     // 🔹 Google Login
-    public String googleLogin(String idToken) {
+    public TokenResponse googleLogin(String idToken) {
 
         GoogleUserInfo info = googleService.verifyToken(idToken);
 
@@ -77,16 +97,10 @@ public class CommonAuthService {
 
         CommonUserRepository.save(CommonUser);
 
-        return jwtUtil.generateToken(CommonUser.getPublicId());
+        return jwtUtil.generateTokens(CommonUser.getPublicId());
     }
 
     // 🔹 Link Mobile after Google login
-    public CommonUser linkMobileOld(HttpServletRequest request, String mobile) {
-
-        CommonUser commonUser = getCurrentUser(request);
-        commonUser.setMobileNumber(mobile);
-        return CommonUserRepository.save(commonUser);
-    }
     public CommonUser linkMobile(HttpServletRequest request, String mobile) {
 
         CommonUser currentUser = getCurrentUser(request);
@@ -135,11 +149,32 @@ public class CommonAuthService {
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
-            throw new RuntimeException("Missing token");
+            throw new TokenExpiredException("Access token missing or invalid");
         }
 
         String token = header.substring(7);
 
-        return jwtUtil.extractUserId(token); // now String (UUID/publicId)
+        try {
+            return jwtUtil.extractUserId(token);
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException("Access token expired");
+        }
     }
+
+    public TokenResponse refreshToken(String refreshToken) {
+        try {
+            String userId = jwtUtil.extractUserId(refreshToken);
+//            String newAccessToken = jwtUtil.generateAccessToken(userId);
+//            return new TokenResponse(newAccessToken, refreshToken);
+            return jwtUtil.generateTokens(userId);
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException("Refresh token expired");
+        }
+    }
+
+    public String generateOtp() {
+        SecureRandom random = new SecureRandom();
+        return String.format("%06d", random.nextInt(1000000));
+    }
+
 }
