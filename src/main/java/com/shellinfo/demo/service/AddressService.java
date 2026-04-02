@@ -1,11 +1,10 @@
 package com.shellinfo.demo.service;
 
+import com.shellinfo.demo.model.dto.UserAddressesDto;
 import com.shellinfo.demo.model.entity.UserAddress;
 import com.shellinfo.demo.repository.UserAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AddressService {
@@ -36,8 +35,11 @@ public class AddressService {
     }
 
     /// 🔹 Get All
-    public List<UserAddress> getAddresses(String userId) {
-        return repo.findByUserId(userId);
+    public UserAddressesDto getAddresses(String userId) {
+
+        UserAddressesDto userAddressesDto = new UserAddressesDto();
+        userAddressesDto.setAddresses(repo.findByUserId(userId));
+        return userAddressesDto;
     }
 
     /// 🔹 Update Address
@@ -100,5 +102,12 @@ public class AddressService {
 
         newDefault.setDefault(true);
         repo.save(newDefault);
+    }
+
+    /// 🔹 Get Default Address
+    public UserAddress getDefault(String userId) {
+
+        return repo.findByUserIdAndIsDefaultTrue(userId)
+                .orElseThrow(() -> new RuntimeException("Default address not found"));
     }
 }
