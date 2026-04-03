@@ -56,6 +56,10 @@ public class AddressService {
         address.setCity(updated.getCity());
         address.setState(updated.getState());
         address.setPinCode(updated.getPinCode());
+        address.setCountry(updated.getCountry());
+        address.setCountryCode(updated.getCountryCode());
+        address.setLandmark(updated.getLandmark());
+        address.setAddressType(updated.getAddressType());
 
         /// ✅ Handle default
         if (updated.isDefaultAddress()) {
