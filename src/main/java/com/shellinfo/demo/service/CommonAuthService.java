@@ -124,6 +124,7 @@ public class CommonAuthService {
 
         CommonUser commonUser = getCurrentUser(request);
         commonUser.setName(req.getName());
+        commonUser.setEmail(req.getEmail());
         commonUser.setGender(req.getGender());
         commonUser.setDob(req.getDob());
         commonUser.setOccupation(req.getOccupation());
