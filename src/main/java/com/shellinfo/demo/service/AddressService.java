@@ -1,10 +1,11 @@
 package com.shellinfo.demo.service;
 
-import com.shellinfo.demo.model.dto.UserAddressesDto;
 import com.shellinfo.demo.model.entity.UserAddress;
 import com.shellinfo.demo.repository.UserAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AddressService {
@@ -19,14 +20,14 @@ public class AddressService {
 
         /// ✅ If first address → make default
         if (repo.findByUserId(userId).isEmpty()) {
-            address.setDefault(true);
+            address.setDefaultAddress(true);
         }
 
         /// ✅ If marked default → unset old one
-        if (address.isDefault()) {
-            repo.findByUserIdAndIsDefaultTrue(userId)
+        if (address.isDefaultAddress()) {
+            repo.findByUserIdAndDefaultAddressTrue(userId)
                     .ifPresent(old -> {
-                        old.setDefault(false);
+                        old.setDefaultAddress(false);
                         repo.save(old);
                     });
         }
@@ -35,11 +36,8 @@ public class AddressService {
     }
 
     /// 🔹 Get All
-    public UserAddressesDto getAddresses(String userId) {
-
-        UserAddressesDto userAddressesDto = new UserAddressesDto();
-        userAddressesDto.setAddresses(repo.findByUserId(userId));
-        return userAddressesDto;
+    public List<UserAddress> getAddresses(String userId) {
+        return repo.findByUserId(userId);
     }
 
     /// 🔹 Update Address
@@ -60,13 +58,13 @@ public class AddressService {
         address.setPinCode(updated.getPinCode());
 
         /// ✅ Handle default
-        if (updated.isDefault()) {
-            repo.findByUserIdAndIsDefaultTrue(userId)
+        if (updated.isDefaultAddress()) {
+            repo.findByUserIdAndDefaultAddressTrue(userId)
                     .ifPresent(old -> {
-                        old.setDefault(false);
+                        old.setDefaultAddress(false);
                         repo.save(old);
                     });
-            address.setDefault(true);
+            address.setDefaultAddress(true);
         }
 
         return repo.save(address);
@@ -85,7 +83,7 @@ public class AddressService {
     }
 
     /// 🔹 Set Default Address
-    public void setDefault(String userId, Long id) {
+    public void setDefaultAddress(String userId, Long id) {
 
         UserAddress newDefault = repo.findById(id).orElseThrow();
 
@@ -94,20 +92,20 @@ public class AddressService {
         }
 
         /// unset old
-        repo.findByUserIdAndIsDefaultTrue(userId)
+        repo.findByUserIdAndDefaultAddressTrue(userId)
                 .ifPresent(old -> {
-                    old.setDefault(false);
+                    old.setDefaultAddress(false);
                     repo.save(old);
                 });
 
-        newDefault.setDefault(true);
+        newDefault.setDefaultAddress(true);
         repo.save(newDefault);
     }
 
     /// 🔹 Get Default Address
     public UserAddress getDefault(String userId) {
 
-        return repo.findByUserIdAndIsDefaultTrue(userId)
+        return repo.findByUserIdAndDefaultAddressTrue(userId)
                 .orElseThrow(() -> new RuntimeException("Default address not found"));
     }
 }

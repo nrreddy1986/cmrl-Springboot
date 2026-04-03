@@ -115,6 +115,7 @@ public class UserController {
     @PostMapping("/getUserDetails")
     public ResponseEntity<ApiResponse<UserDetailsDto>> getUserDetails(@RequestBody User _user) {
         User user = userService.getUserDetails(_user.getMobileNumber());
+
         UserDetailsDto userDetailsDto = UserDetailsDto.from(user);
 
         return ResponseEntity.ok(

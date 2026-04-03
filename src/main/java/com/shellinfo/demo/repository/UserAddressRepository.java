@@ -10,5 +10,5 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 
     List<UserAddress> findByUserId(String userId);
 
-    Optional<UserAddress> findByUserIdAndIsDefaultTrue(String userId);
+    Optional<UserAddress> findByUserIdAndDefaultAddressTrue(String userId);
 }

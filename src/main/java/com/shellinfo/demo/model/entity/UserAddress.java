@@ -29,5 +29,5 @@ public class UserAddress {
     private String countryCode;
     private String pinCode;
 
-    private boolean isDefault;
+    private boolean defaultAddress;
 }
