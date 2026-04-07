@@ -1,7 +1,10 @@
 package com.shellinfo.demo.service;
 
 import com.shellinfo.demo.model.CommonUser;
+import com.shellinfo.demo.model.dto.ChatDto;
 import com.shellinfo.demo.model.dto.ChatListDto;
+import com.shellinfo.demo.model.dto.MessageDto;
+import com.shellinfo.demo.model.dto.MessageListDto;
 import com.shellinfo.demo.model.entity.message.Message;
 import com.shellinfo.demo.repository.CommonUserRepository;
 import com.shellinfo.demo.repository.MessageRepository;
@@ -35,24 +38,38 @@ public class MessageService {
     /**
      * ✅ Get chat between 2 users
      */
-    public List<Message> getChat(Long user1, Long user2) {
-        return messageRepository
+    public MessageListDto getChat(CommonUser currentUser, CommonUser otherUser) {
+
+        List<Message> messages = messageRepository
                 .findBySenderIdAndReceiverIdOrReceiverIdAndSenderId(
-                        user1, user2,
-                        user1, user2
+                        currentUser.getId(), otherUser.getId(),
+                        currentUser.getId(), otherUser.getId()
                 )
                 .stream()
                 .sorted(Comparator.comparing(Message::getCreatedAt))
                 .toList();
+
+        // ✅ Convert to DTO
+        List<MessageDto> dtoList = messages.stream()
+                .map(msg -> MessageDto.from(
+                        msg,
+                        currentUser.getPublicId(),   // senderPublicId ❗
+                        otherUser.getPublicId()      // receiverPublicId ❗
+                ))
+                .toList();
+
+        return MessageListDto.from(dtoList);
     }
 
     /**
      * ✅ Chat List (last message per user)
      */
-    public List<ChatListDto> getChatList(CommonUser commonUser) {
+    public ChatListDto getChatList(CommonUser commonUser) {
 
         List<Message> messages =
-                messageRepository.findBySenderIdOrReceiverId(commonUser.getId(), commonUser.getId());
+                messageRepository.findBySenderIdOrReceiverId(
+                        commonUser.getId(), commonUser.getId()
+                );
 
         Map<Long, Message> lastMessageMap = new HashMap<>();
 
@@ -71,18 +88,25 @@ public class MessageService {
             }
         }
 
-        /// Convert to DTO
-        return lastMessageMap.entrySet().stream()
+        /// 🔥 Convert to ChatDto list
+        List<ChatDto> chatDtos = lastMessageMap.entrySet().stream()
                 .map(entry -> {
 
-                    Long otherUserId = entry.getKey();
                     Message message = entry.getValue();
 
-                    return ChatListDto.from(commonUser, message);
+                    // 👉 You must fetch other user
+                    CommonUser otherUser = commonUserRepository
+                            .findById(entry.getKey())
+                            .orElseThrow();
+
+                    return ChatDto.from(otherUser, message);
 
                 })
-                .sorted((a, b) -> b.getTime().compareTo(a.getTime())) // latest first
+                .sorted((a, b) -> b.getTime().compareTo(a.getTime()))
                 .toList();
+
+        /// 🔥 Wrap into ChatListDto
+        return ChatListDto.from(chatDtos);
     }
 
     /**

@@ -1,24 +1,19 @@
 package com.shellinfo.demo.model.dto;
 
-import com.shellinfo.demo.model.CommonUser;
-import com.shellinfo.demo.model.entity.message.Message;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class ChatListDto {
-    private String userId;
-    private String name;
-    private String lastMessage;
-    private LocalDateTime time;
+    private List<ChatDto> chatList;
 
-    public static ChatListDto from(CommonUser user, Message message) {
+    public static ChatListDto from(List<ChatDto> userChats) {
         ChatListDto dto = new ChatListDto();
-        dto.setUserId(user.getPublicId());
-        dto.setName(user.getName());
-        dto.setLastMessage(message.getContent());
-        dto.setTime(message.getCreatedAt());
+
+        dto.setChatList(userChats != null ? userChats : new ArrayList<>());
+
         return dto;
     }
 }
