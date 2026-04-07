@@ -11,7 +11,7 @@ import java.util.List;
 public class AddressService {
 
     @Autowired
-    private UserAddressRepository repo;
+    private UserAddressRepository userAddressRepository;
 
     /// 🔹 Add Address
     public UserAddress addAddress(String userId, UserAddress address) {
@@ -19,31 +19,31 @@ public class AddressService {
         address.setUserId(userId);
 
         /// ✅ If first address → make default
-        if (repo.findByUserId(userId).isEmpty()) {
+        if (userAddressRepository.findByUserId(userId).isEmpty()) {
             address.setDefaultAddress(true);
         }
 
         /// ✅ If marked default → unset old one
         if (address.isDefaultAddress()) {
-            repo.findByUserIdAndDefaultAddressTrue(userId)
+            userAddressRepository.findByUserIdAndDefaultAddressTrue(userId)
                     .ifPresent(old -> {
                         old.setDefaultAddress(false);
-                        repo.save(old);
+                        userAddressRepository.save(old);
                     });
         }
 
-        return repo.save(address);
+        return userAddressRepository.save(address);
     }
 
     /// 🔹 Get All
     public List<UserAddress> getAddresses(String userId) {
-        return repo.findByUserId(userId);
+        return userAddressRepository.findByUserId(userId);
     }
 
     /// 🔹 Update Address
     public UserAddress updateAddress(String userId, Long id, UserAddress updated) {
 
-        UserAddress address = repo.findById(id).orElseThrow();
+        UserAddress address = userAddressRepository.findById(id).orElseThrow();
 
         if (!address.getUserId().equals(userId)) {
             throw new RuntimeException("Unauthorized");
@@ -63,53 +63,53 @@ public class AddressService {
 
         /// ✅ Handle default
         if (updated.isDefaultAddress()) {
-            repo.findByUserIdAndDefaultAddressTrue(userId)
+            userAddressRepository.findByUserIdAndDefaultAddressTrue(userId)
                     .ifPresent(old -> {
                         old.setDefaultAddress(false);
-                        repo.save(old);
+                        userAddressRepository.save(old);
                     });
             address.setDefaultAddress(true);
         }
 
-        return repo.save(address);
+        return userAddressRepository.save(address);
     }
 
     /// 🔹 Delete Address
     public void deleteAddress(String userId, Long id) {
 
-        UserAddress address = repo.findById(id).orElseThrow();
+        UserAddress address = userAddressRepository.findById(id).orElseThrow();
 
         if (!address.getUserId().equals(userId)) {
             throw new RuntimeException("Unauthorized");
         }
 
-        repo.delete(address);
+        userAddressRepository.delete(address);
     }
 
     /// 🔹 Set Default Address
     public void setDefaultAddress(String userId, Long id) {
 
-        UserAddress newDefault = repo.findById(id).orElseThrow();
+        UserAddress newDefault = userAddressRepository.findById(id).orElseThrow();
 
         if (!newDefault.getUserId().equals(userId)) {
             throw new RuntimeException("Unauthorized");
         }
 
         /// unset old
-        repo.findByUserIdAndDefaultAddressTrue(userId)
+        userAddressRepository.findByUserIdAndDefaultAddressTrue(userId)
                 .ifPresent(old -> {
                     old.setDefaultAddress(false);
-                    repo.save(old);
+                    userAddressRepository.save(old);
                 });
 
         newDefault.setDefaultAddress(true);
-        repo.save(newDefault);
+        userAddressRepository.save(newDefault);
     }
 
     /// 🔹 Get Default Address
     public UserAddress getDefault(String userId) {
 
-        return repo.findByUserIdAndDefaultAddressTrue(userId)
+        return userAddressRepository.findByUserIdAndDefaultAddressTrue(userId)
                 .orElseThrow(() -> new RuntimeException("Default address not found"));
     }
 }

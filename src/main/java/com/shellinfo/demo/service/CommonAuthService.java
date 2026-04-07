@@ -156,7 +156,7 @@ public class CommonAuthService {
         String token = header.substring(7);
 
         try {
-            return jwtUtil.extractUserId(token);
+            return jwtUtil.extractPublicId(token);
         } catch (ExpiredJwtException e) {
             throw new TokenExpiredException("Access token expired");
         }
@@ -164,10 +164,8 @@ public class CommonAuthService {
 
     public TokenResponse refreshToken(String refreshToken) {
         try {
-            String userId = jwtUtil.extractUserId(refreshToken);
-//            String newAccessToken = jwtUtil.generateAccessToken(userId);
-//            return new TokenResponse(newAccessToken, refreshToken);
-            return jwtUtil.generateTokens(userId);
+            String publicId = jwtUtil.extractPublicId(refreshToken);
+            return jwtUtil.generateTokens(publicId);
         } catch (ExpiredJwtException e) {
             throw new TokenExpiredException("Refresh token expired");
         }

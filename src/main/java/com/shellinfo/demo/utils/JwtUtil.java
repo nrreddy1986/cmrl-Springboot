@@ -75,10 +75,10 @@ public class JwtUtil {
     private final String secret = "mysupersecuresecretkeymysupersecuresecretkey12345";
     private final Key key = Keys.hmacShaKeyFor(secret.getBytes());
 
-    public String generateToken(String userId) {
+    public String generateToken(String publicId) {
         long milliSeconds = 86400000L; // 24 hours
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(publicId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + milliSeconds))
                 .signWith(key)
@@ -86,17 +86,17 @@ public class JwtUtil {
     }
 
     // ✅ Generate both tokens
-    public TokenResponse generateTokens(String userId) {
+    public TokenResponse generateTokens(String publicId) {
         return new TokenResponse(
-                generateAccessToken(userId),
-                generateRefreshToken(userId)
+                generateAccessToken(publicId),
+                generateRefreshToken(publicId)
         );
     }
 
     // ✅ Access Token (12 hours)
-    public String generateAccessToken(String userId) {
+    public String generateAccessToken(String publicId) {
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(publicId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 12 * 60 * 60 * 1000))
                 .signWith(key)
@@ -104,17 +104,17 @@ public class JwtUtil {
     }
 
     // ✅ Refresh Token (7 days)
-    public String generateRefreshToken(String userId) {
+    public String generateRefreshToken(String publicId) {
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(publicId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
                 .signWith(key)
                 .compact();
     }
 
-    // ✅ Extract userId (subject)
-    public String extractUserId(String token) {
+    // ✅ Extract publicId (subject)
+    public String extractPublicId(String token) {
         return extractAllClaims(token).getSubject();
     }
 

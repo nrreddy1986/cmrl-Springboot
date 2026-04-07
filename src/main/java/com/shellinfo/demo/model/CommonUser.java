@@ -17,10 +17,10 @@ public class CommonUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // internal
 
-    @Column(unique = true)
-    private String publicId;
+    @Column(unique = true, nullable = false)
+    private String publicId; // UUID (main identity)
 
     // 🔐 Auth fields
     @Column(unique = true)
@@ -39,7 +39,7 @@ public class CommonUser {
     private String gender;
     private String dob;
     private String occupation;
-    private boolean isDisability;
+    private boolean disability;
     private boolean tcAgreed;
     private String profileImage;
 
