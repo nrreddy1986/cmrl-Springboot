@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class CommonUserDetailsDto {
 
+    private String publicId;
     private String name;
     private String mobileNumber;
     private String email;
@@ -18,6 +19,7 @@ public class CommonUserDetailsDto {
     public static CommonUserDetailsDto from(CommonUser user) {
         CommonUserDetailsDto dto = new CommonUserDetailsDto();
 
+        dto.setPublicId(valueOrEmpty(user.getPublicId()));
         dto.setName(valueOrEmpty(user.getName()));
         dto.setMobileNumber(valueOrEmpty(user.getMobileNumber()));
         dto.setEmail(valueOrEmpty(user.getEmail()));
