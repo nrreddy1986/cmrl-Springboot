@@ -12,6 +12,7 @@ public class ChatDto {
     private String name;
     private String lastMessage;
     private LocalDateTime time;
+    private boolean isRead;
 
     public static ChatDto from(CommonUser user, Message message) {
         ChatDto dto = new ChatDto();
@@ -19,6 +20,7 @@ public class ChatDto {
         dto.setName(user.getName());
         dto.setLastMessage(message.getContent());
         dto.setTime(message.getCreatedAt());
+        dto.setRead(message.isRead());
         return dto;
     }
 

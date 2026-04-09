@@ -50,15 +50,29 @@ public class MessageService {
                 .toList();
 
         // ✅ Convert to DTO
-        List<MessageDto> dtoList = messages.stream()
-                .map(msg -> MessageDto.from(
-                        msg,
-                        currentUser.getPublicId(),   // senderPublicId ❗
-                        otherUser.getPublicId()      // receiverPublicId ❗
-                ))
+        List<MessageDto> messagesDtoList = messages.stream()
+                .map(msg -> {
+
+                    boolean isCurrentUserSender =
+                            msg.getSenderId().equals(currentUser.getId());
+
+                    String senderPublicId = isCurrentUserSender
+                            ? currentUser.getPublicId()
+                            : otherUser.getPublicId();
+
+                    String receiverPublicId = isCurrentUserSender
+                            ? otherUser.getPublicId()
+                            : currentUser.getPublicId();
+
+                    return MessageDto.from(
+                            msg,
+                            senderPublicId,
+                            receiverPublicId
+                    );
+                })
                 .toList();
 
-        return MessageListDto.from(dtoList);
+        return MessageListDto.from(messagesDtoList);
     }
 
     /**
@@ -112,17 +126,15 @@ public class MessageService {
     /**
      * ✅ Mark messages as read
      */
-    public void markAsRead(Long senderId, Long receiverId) {
+    public void markAsRead(CommonUser sender, CommonUser receiver) {
 
-        List<Message> messages =
-                messageRepository.findBySenderIdAndReceiverId(
-                        senderId, receiverId
+        List<Message> messages = messageRepository
+                .findBySenderIdAndReceiverIdAndIsReadFalse(
+                        sender.getId(),
+                        receiver.getId()
                 );
 
-        for (Message msg : messages) {
-            msg.setRead(true);
-        }
-
+        messages.forEach(m -> m.setRead(true));
         messageRepository.saveAll(messages);
     }
 
