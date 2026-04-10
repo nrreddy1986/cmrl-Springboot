@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 public class ChatDto {
     private String userId;
     private String name;
+    private String mobileNumber;
+    private String email;
     private String lastMessage;
     private LocalDateTime time;
     private boolean isRead;
@@ -18,6 +20,8 @@ public class ChatDto {
         ChatDto dto = new ChatDto();
         dto.setUserId(user.getPublicId());
         dto.setName(user.getName());
+        dto.setMobileNumber(user.getMobileNumber());
+        dto.setEmail(user.getEmail());
         dto.setLastMessage(message.getContent());
         dto.setTime(message.getCreatedAt());
         dto.setRead(message.isRead());
