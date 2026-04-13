@@ -74,6 +74,8 @@ public class JwtUtil {
 
     private final String secret = "mysupersecuresecretkeymysupersecuresecretkey12345";
     private final Key key = Keys.hmacShaKeyFor(secret.getBytes());
+    private final long milliSecondsTwelveHours = 12 * 60 * 60 * 1000; // Twelve Hours
+    private final long milliSecondsSevenDays = 7 * 24 * 60 * 60 * 1000; // Seven Days
 
     public String generateToken(String publicId) {
         long milliSeconds = 86400000L; // 24 hours
@@ -98,7 +100,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(publicId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 12 * 60 * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + milliSecondsTwelveHours))
                 .signWith(key)
                 .compact();
     }
@@ -108,7 +110,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(publicId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + milliSecondsSevenDays))
                 .signWith(key)
                 .compact();
     }
